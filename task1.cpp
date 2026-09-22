@@ -24,33 +24,33 @@ int main(int argc, char* argv[]) {
         filesystem::path path = DFSStack.top();
         DFSStack.pop();
 
-        for (const filesystem::directory_entry& entry : filesystem::directory_iterator(path)) {
-            if (entry.is_regular_file()) { // do the hash
-                cout << "[FILE: HASH AND PATH]: ";
-                ifstream file(entry.path());
-
-                if (!file.is_open()) { // Will this even work on a non-text file?
-                    cout << "Error reading the file!" << endl;
-                    return 1;
-                }
-                
-                string content, temp;
-
-                while (getline(file, temp))
-                    content += temp;
-
-                file.close();
-
-                hash<string> hash;
-
-                cout << hash(content) << " | ";
-            } else
-                cout << "[DIR]: ";
-            
-            cout << entry.path() << endl;
-
-            if (entry.is_directory())
+        for ( const filesystem::directory_entry& entry :
+              filesystem::directory_iterator(path) ) {
+            if (entry.is_directory() || !entry.is_regular_file()) {
                 DFSStack.push(entry.path());
+                //cout << "[DIR]: " << entry.path() << endl;
+                continue;
+            }
+
+            // open the file and do the hash
+            ifstream file(entry.path());
+
+            if (!file.is_open()) { // Will this even work on a non-text file?
+                cout << "Error reading the file!" << endl;
+                return 1;
+            }
+            
+            string content = entry.path(), temp;
+
+            while (getline(file, temp))
+                content += temp;
+
+            file.close();
+
+            hash<string> hash;
+
+            // the newline character is the best delimeter I could think of
+            cout << entry.path() << "\n" << hash(content) << endl; 
         }
     }
 
