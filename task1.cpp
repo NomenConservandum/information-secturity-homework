@@ -16,21 +16,22 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    // DFS part
     stack<filesystem::path> DFSStack;
     DFSStack.push(dir);
     while(!DFSStack.empty()) {
         filesystem::path path = DFSStack.top();
         DFSStack.pop();
+
         for (const filesystem::directory_entry& entry : filesystem::directory_iterator(path)) {
-            cout << entry.path();
             if (entry.is_regular_file())
-                cout << "[FILE]";
-            cout << endl;
-            DFSStack.push(entry.path());
+                cout << "[FILE]: ";
+            else
+                cout << "[DIR]: ";
+            cout << entry.path() << endl;
+            if (entry.is_directory())
+                DFSStack.push(entry.path());
         }
-    }
-    for (const filesystem::directory_entry& entry : filesystem::directory_iterator(dir)) {
-        std::cout << entry.path() << endl;
     }
 
     return 0;
