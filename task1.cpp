@@ -1,12 +1,51 @@
+#include <cstddef>
 #include <iostream>
 #include <filesystem>
 #include <stack>
 #include <fstream>
 #include <string>
+#include <map>
 
 using namespace std;
 
-// TODO: write two functions (read and write hash-file functions)
+map<string, size_t>* readHashFile(filesystem::path dir) {
+    if (!filesystem::exists(dir)) { // check for hash-file
+        // create one
+        ofstream hashFile(dir);
+        hashFile.close();
+    }
+
+    fstream hashFile(dir);
+
+    if (!hashFile.is_open()) {
+        cerr << "Error opening the hash-file!" << endl;
+        return nullptr;
+    }
+
+    map<string, size_t>* res = new map<string, size_t>();
+
+    // read the file
+    string temp;
+
+    while (getline(hashFile, temp)) {
+        string
+            to_string = temp.substr(0, temp.find_first_of(':')),
+            to_size_t = temp.substr(temp.find_first_of(':') + 1, temp.length() - temp.find_first_of(':'));
+        
+        // convert the string to size_t this weird way
+        stringstream stream(to_size_t);
+        size_t output;
+        stream >> output;
+
+        res->insert({to_string,output});
+    }
+
+    hashFile.close();
+
+    return res;
+}
+
+// TODO: write the second function
 
 // look at 3 cases: a file is added; a file is deleted; a file is modified (the hash is different)
 int main(int argc, char* argv[]) {
@@ -19,20 +58,7 @@ int main(int argc, char* argv[]) {
     
     filesystem::path hashFileDir = dir / "hash-file.txt";
 
-    if (!filesystem::exists(hashFileDir)) { // check for hash-file
-        // create one
-        ofstream hashFile(hashFileDir);
-        hashFile.close();
-    }
-
-    fstream hashFile(hashFileDir); // I have two ways:
-    // 1. put all of the hash-file work into functions;
-    // 2. read it here once into a map and then write new contents into the file
-
-    if (!hashFile.is_open()) {
-        cout << "Error opening the hash-file!" << endl;
-        return 1;
-    }
+    map<string, size_t>* hashes = readHashFile(hashFileDir); // read the hash-file
 
     // DFS part
     stack<filesystem::path> DFSStack;
@@ -68,11 +94,11 @@ int main(int argc, char* argv[]) {
             // store in a map where key is path and value is hash
 
             // the newline character is the best delimeter I could think of
-            cout << entry.path() << "\n" << hash(content) << endl;
+            cout << entry.path() << ":" << hash(content) << endl;
         }
     }
 
-    hashFile.close();
+    // Give the user a choice: save the new hash file, if changes present, or keep the old one
 
     return 0;
 }
