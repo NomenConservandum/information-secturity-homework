@@ -38,8 +38,6 @@ map<string, size_t>* readHashFile(filesystem::path dir) {
     return res;
 }
 
-// TODO: write the second function
-
 // look at 3 cases: a file is added; a file is deleted; a file is modified (the hash is different)
 int main(int argc, char* argv[]) {
     filesystem::path dir = argv[1];
@@ -121,7 +119,6 @@ int main(int argc, char* argv[]) {
             cerr << "WARNING! A NEW FILE HAS BEEN DETECTED: " << it.first << "!" << endl;
         }
     }
-    // Give the user a choice maybe: save the new hash file, if changes present, or keep the old one
-
+    
     return 0;
 }
