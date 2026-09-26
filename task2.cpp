@@ -6,11 +6,18 @@ using namespace std;
 // The third method: change Cyrillic letters to their Latin counterparts
 
 // We're going to use the find_first_of for the Russian letters and change them recursively, if num & 1 == 1 => encode, else, skip.
+int encodeMessage() {
+    return 0;
+}
+
+int decodeMessage() {
+    return 0;
+}
 
 // the first value is the number of arguments, the second one - path to the file,
-// the third one - mode (1 - incode, 2 - decode), the fourth one - message for to incode.
+// the third one - mode (1 - encode, 2 - decode), the fourth one - message for to encode.
 int main(int argc, char* argv[]) {
-    string argumentsRequired = "1st - path to the file;\n2nd - mode (1 for incode and 2 for decode)\n3rd - message to decode (if mode 1 is chosen)";
+    string argumentsRequired = "1st - path to the file;\n2nd - mode (1 for encode and 2 for decode)\n3rd - message to decode (if mode 1 is chosen)";
     if (argc < 2 || argc > 3 || *argv[2] == '1' && argc != 3 || *argv[2] == '2' && argc != 2) {
         cerr << "WRONG NUMBER OF ARGUMENTS!" << argumentsRequired << endl;
         return 1;
@@ -22,6 +29,14 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    
+    // now the branching
+    switch (*argv[2]) {
+        case '1': encodeMessage(); break;
+        case '2': decodeMessage(); break;
+        default: {
+            cerr << "WRONG MODE! The arguments needed:\n" << argumentsRequired << endl;
+            return 1;
+        }
+    }
     return 0;
 }
