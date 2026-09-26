@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <iostream>
 #include <filesystem>
 #include <stack>
@@ -8,7 +7,26 @@
 
 using namespace std;
 
-map<string, size_t>* readHashFile(filesystem::path dir) {
+short makeHash(string initString) {
+    short res = 0;
+    int len = initString.length();
+    if (len % 2 == 1) {
+        initString.insert(initString.end(), 0);
+        len = initString.length();
+    }
+    if (len == 0) {
+        return 0;
+    }
+    
+    res += (initString[1] << 8) + initString[2];
+    for (int i = 2; i < len; i += 2) {
+        res ^= ((initString[i] << 8) + initString[i + 1]);
+    }
+    return res;
+}
+
+// Check the existence of the file before you call this function
+map<string, short>* readHashFile(filesystem::path dir) {
     fstream hashFile(dir);
 
     if (!hashFile.is_open()) {
@@ -16,19 +34,16 @@ map<string, size_t>* readHashFile(filesystem::path dir) {
         return nullptr;
     }
 
-    map<string, size_t>* res = new map<string, size_t>();
+    map<string, short>* res = new map<string, short>();
 
     // read the file
     string temp;
 
     while (getline(hashFile, temp)) {
         string to_string = temp.substr(1, temp.find_first_of(':') - 2),
-               to_size_t = temp.substr(temp.find_first_of(':') + 1, temp.length() - temp.find_first_of(':'));
+               to_short = temp.substr(temp.find_first_of(':') + 1, temp.length() - temp.find_first_of(':'));
         
-        // convert the string to size_t this weird way
-        stringstream stream(to_size_t);
-        size_t output;
-        stream >> output;
+        short output = short(stoi(to_short));
 
         res->insert({to_string,output});
     }
@@ -49,8 +64,8 @@ int main(int argc, char* argv[]) {
     
     filesystem::path hashFileDir = dir / "hash-file.txt";
     
-    map<string, size_t> *oldHashes = nullptr, // read the hash-file
-                        *newHashes = new map<string, size_t>();
+    map<string, short> *oldHashes = nullptr, // read the hash-file
+                        *newHashes = new map<string, short>();
 
     bool doesHashFileExist = filesystem::exists(hashFileDir);
     if (doesHashFileExist)
@@ -90,23 +105,20 @@ int main(int argc, char* argv[]) {
 
             file.close();
 
-            hash<string> hash;
-
-            // store in a map where key is path and value is hash
-
+            short fileHash = makeHash(content);
             // the newline character is the best delimeter I could think of
-            hashFile << entry.path() << ":" << hash(content) << endl;
-            // cerr << entry.path() << ":" << hash(content) << endl;
-            newHashes->insert({entry.path(), hash(content)});
+            hashFile << entry.path() << ":" << fileHash << endl;
+            // store in a map where key is path and value is hash
+            newHashes->insert({entry.path(), fileHash});
         }
     }
     hashFile.close();
 
     if (oldHashes == nullptr)
         return 0;
+
     // A simple check. I'm too lazy to come up with something special.
     for (const auto& it : *oldHashes) {
-        //cerr << "Looking for: " << it.first << endl;
         if (newHashes->find(it.first) == newHashes->end()) { // no such element
             cerr << "WARNING! THE FILE " << it.first << " HAS BEEN DELETED!" << endl;
         } else if (it.second != newHashes->find(it.first)->second) { // The hashes do not align
@@ -114,7 +126,6 @@ int main(int argc, char* argv[]) {
         }
     }
     for (const auto& it : *newHashes) {
-        //cerr << "Looking for: " << it.first << endl;
         if (oldHashes->find(it.first) == oldHashes->end()) { // this is a new file
             cerr << "WARNING! A NEW FILE HAS BEEN DETECTED: " << it.first << "!" << endl;
         }
