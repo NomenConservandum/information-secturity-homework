@@ -1,5 +1,4 @@
 import sys
-import os
 from pathlib import Path
 
 
@@ -8,7 +7,17 @@ def encode_message(path: Path, message: str) -> int:
     init_file_content = ""
     with open(path, 'r', encoding='cp1251') as f:
         for line in f:
-            init_file_content += line.rstrip('\n')  # getline drops the '\n'
+            init_file_content += line
+    
+    bitMessage = bin(int.from_bytes(message.encode(encoding='cp1251'), 'big'))[2:]
+    print(f"Binary representation of the message: {bitMessage}")
+
+    while (bitMessage):
+        bit = bitMessage[len(bitMessage) - 1]
+        bitMessage = bitMessage[:len(bitMessage) - 1]
+        if (bit == '1'):
+            init_file_content.find()
+        
     print(init_file_content)
     return 0
 
@@ -58,6 +67,4 @@ def main(argv: list[str]) -> int:
 
     return 0
 
-
-if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+main(sys.argv)
