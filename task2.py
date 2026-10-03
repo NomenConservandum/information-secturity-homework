@@ -1,6 +1,41 @@
 import sys
 from pathlib import Path
 
+def letter_substitution(char: str) -> str:
+    # а е о р с у х А B Е К О Р С Т Х
+    match char:
+        case 'а':
+            return 'a'
+        case 'е':
+            return 'e'
+        case 'о':
+            return 'o'
+        case 'р':
+            return 'p'
+        case 'с':
+            return 'c'
+        case 'у':
+            return 'y'
+        case 'х':
+            return 'x'
+        case 'А':
+            return 'A'
+        case 'В':
+            return 'B'
+        case 'Е':
+            return 'E'
+        case 'К':
+            return 'K'
+        case 'О':
+            return 'O'
+        case 'Р':
+            return 'P'
+        case 'С':
+            return 'C'
+        case 'Т':
+            return 'T'
+        case 'Х':
+            return 'X'
 
 def encode_message(path: Path, message: str) -> int:
     """Read file and print its content (encode stub)."""
