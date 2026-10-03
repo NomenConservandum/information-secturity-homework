@@ -84,6 +84,9 @@ def decode_message(path: Path) -> int:
                 bitMessage = '1' + bitMessage
             else: # original Russian letter
                 bitMessage = '0' + bitMessage
+        if len(bitMessage) % 8 == 0 and bitMessage[:8] == '0' * 8: # encountered first zero byte, the message has ended
+            bitMessage = bitMessage[:len(bitMessage) - 8]
+            break
     
     if len(bitMessage) % 8 != 0: # adding zero-bits for the last byte
         bitMessage = '0' * (8 - len(bitMessage) % 8) + bitMessage
@@ -91,7 +94,7 @@ def decode_message(path: Path) -> int:
     print(f"Binary representation of the message: {bitMessage}")
 
     decoded_message = bytes(int(bitMessage[i:i+8], 2) for i in range(0, len(bitMessage), 8)).decode(encoding='cp1251')
-    decoded_message = decoded_message.lstrip('\x00') # removing null characters
+
     print(f"Decoded message: {decoded_message}")
     
     return 0
