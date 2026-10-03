@@ -54,13 +54,23 @@ def encode_message(path: Path, message: str) -> int:
     bitMessage = bin(int.from_bytes(message.encode(encoding='cp1251'), 'big'))[2:]
     print(f"Binary representation of the message: {bitMessage}")
 
+    target_letter_indices = get_indices_of_letters(init_file_content)
+    target_letter_index_index = 0
+    
     while (bitMessage):
         bit = bitMessage[len(bitMessage) - 1]
         bitMessage = bitMessage[:len(bitMessage) - 1]
+
         if (bit == '1'):
-            init_file_content.find()
-        
-    print(init_file_content)
+            # get the target letter
+            target_letter = init_file_content[target_letter_indices[target_letter_index_index]]
+            # change the target letter to its encoded form
+            init_file_content[target_letter_indices[target_letter_index_index]] = letter_substitution(target_letter)
+        target_letter_index_index += 1
+
+    with open(path, 'w', encoding='cp1251') as f:
+        f.write(init_file_content)
+    
     return 0
 
 
