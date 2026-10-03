@@ -48,6 +48,7 @@ def decode_message(path: Path) -> int:
     
     return 0
 
+# python3 decode.py /home/nomen/Documents/sth.txt
 def main(argv: list[str]) -> int:
     arguments_required = "1st - path to the file"
     

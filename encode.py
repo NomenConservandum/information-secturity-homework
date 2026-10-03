@@ -53,8 +53,9 @@ def encode_message(path: Path, message: str) -> int:
     
     return 0
 
+# python3 encode.py /home/nomen/Documents/sth.txt /home/nomen/Documents/secret.txt
 def main(argv: list[str]) -> int:
-    arguments_required = "1st - path to the file;\n2nd - message to encode"
+    arguments_required = "1st - path to the container file;\n2nd - path to the message file"
     
     argc = len(argv)
     if argc != 3:
@@ -63,10 +64,18 @@ def main(argv: list[str]) -> int:
 
     file_path = Path(argv[1])
     if not file_path.exists():
-        print(f"NO SUCH FILE: {file_path}!", file=sys.stderr)
+        print(f"NO SUCH CONTAINER FILE: {file_path}!", file=sys.stderr)
+        return 1
+        
+    message_path = Path(argv[2])
+    if not message_path.exists():
+        print(f"NO SUCH MESSAGE FILE: {message_path}!", file=sys.stderr)
         return 1
 
-    encode_message(file_path, argv[2])
+    with open(message_path, 'r', encoding='cp1251') as f:
+        message = f.read()
+
+    encode_message(file_path, message)
     return 0
 
 if __name__ == "__main__":
