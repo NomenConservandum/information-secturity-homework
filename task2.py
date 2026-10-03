@@ -37,8 +37,15 @@ def letter_substitution(char: str) -> str:
         case 'Х':
             return 'X'
 
+def get_indices_of_letters(text: str) -> list[int]:
+    target_letters = {'а', 'е', 'о', 'р', 'с', 'у', 'х', 'А', 'В', 'Е', 'К', 'О', 'Р', 'С', 'Т', 'Х'}
+    indices = []
+    for idx, char in enumerate(text):
+        if char in target_letters:
+            indices.append(idx)
+    return indices
+
 def encode_message(path: Path, message: str) -> int:
-    """Read file and print its content (encode stub)."""
     init_file_content = ""
     with open(path, 'r', encoding='cp1251') as f:
         for line in f:
@@ -58,7 +65,6 @@ def encode_message(path: Path, message: str) -> int:
 
 
 def decode_message(path: Path) -> int:
-    """Read file and print its content (decode stub)."""
     init_file_content = ""
     with open(path, 'r', encoding='cp1251') as f:
         for line in f:
