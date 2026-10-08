@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int encodeMessage(filesystem::path path, filesystem::path salt) {
+int decodeMessage(filesystem::path path, filesystem::path salt) {
     string initFileContent = "", temp;
     ifstream file(path);
 
