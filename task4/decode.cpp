@@ -62,6 +62,7 @@ int decodeMessage(filesystem::path path, string salt) {
     return 0;
 }
 
+// ./bin/decode /home/nomen/Documents/folder1/encoded.txt /home/nomen/Documents/folder1/salt.txt
 int main(int argc, char* argv[]) {
     string argumentsRequired = "1st - path to the file;\n2nd - path to the salt file";
     if (argc != 3) {

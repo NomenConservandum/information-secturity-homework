@@ -37,6 +37,7 @@ char* generateSequence(string salt, size_t length) {
     return sequence;
 }
 
+// ./bin/encode /home/nomen/Documents/folder1/test_message.txt "mySalt"
 int encodeMessage(filesystem::path path, string salt) {
     // reading the file
     ifstream file(path, ios::binary);
