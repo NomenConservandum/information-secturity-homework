@@ -3,38 +3,62 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <random>
 
 using namespace std;
 
-int decodeMessage(filesystem::path path, filesystem::path salt) {
-    string initFileContent = "", temp;
-    ifstream file(path);
+short makeHash(string initString) {
+    short res = 0;
+    int len = initString.length();
+    if (len % 2 == 1) {
+        initString.insert(initString.end(), 0);
+        len = initString.length();
+    }
+    if (len == 0) {
+        return 0;
+    }
+    
+    res += (initString[1] << 8) + initString[2];
+    for (int i = 2; i < len; i += 2) {
+        res ^= ((initString[i] << 8) + initString[i + 1]);
+    }
+    return res;
+}
 
-    while (getline(file, temp))
-        initFileContent += temp;
+// Give the salt and the length of the data
+char* generateSequence(string salt, size_t length) {
+    char* sequence = new char[length];
+    short seed = makeHash(salt);
+    mt19937 generator(seed);
 
+    for (size_t i = 0; i < length; ++i) 
+        sequence[i] = (char)(generator() & 255);
+
+    return sequence;
+}
+
+int decodeMessage(filesystem::path path, string salt) {
+    // reading the file
+    ifstream file(path, ios::binary);
+    ostringstream ss;
+    ss << file.rdbuf();
+    string initFileContent = ss.str();
+    file.close();
+    
     size_t len = initFileContent.length();
+    char* sequence = generateSequence(salt, len);
     // cerr << initFileContent;
     
     // decyphering
-    //for (size_t i = 0; i < len; ++i)
-        // initFileContent[i] and sequence[i]
-    
+    for (size_t i = 0; i < len; ++i)
+        initFileContent[i] ^= sequence[i];
+
     // write into the file
-    // ...
+    ofstream outputFile(path.parent_path() / "decoded.txt");
+    outputFile << initFileContent;
+    outputFile.close();
     
-    return 0;
-}
-
-int decodeMessage(filesystem::path path) {
-    string initFileContent = "", temp;
-    ifstream file(path);
-
-    while (getline(file, temp))
-        initFileContent += temp;
-
-    cout << initFileContent;
-    
+    delete[] sequence;
     return 0;
 }
 
@@ -52,6 +76,5 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    decodeMessage(filePath, saltPath);
-    return 0;
+    return decodeMessage(filePath, saltPath);
 }
