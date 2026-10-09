@@ -64,7 +64,7 @@ int decodeMessage(filesystem::path path, string salt) {
 
 int main(int argc, char* argv[]) {
     string argumentsRequired = "1st - path to the file;\n2nd - path to the salt file";
-    if (argc != 2) {
+    if (argc != 3) {
         cerr << "WRONG NUMBER OF ARGUMENTS (" << argc - 1 << ")!\n" << argumentsRequired << endl;
         return 1;
     }
@@ -76,5 +76,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    return decodeMessage(filePath, saltPath);
+    // Read the salt from the salt file
+    ifstream saltFile(saltPath);
+    string saltString;
+    saltFile >> saltString;
+    saltFile.close();
+
+    return decodeMessage(filePath, saltString);
 }

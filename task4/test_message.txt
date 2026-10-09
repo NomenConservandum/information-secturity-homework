@@ -1,0 +1,4 @@
+This is a secret message.
+It has multiple lines!
+Let's see if the newline preservation works properly.
+Testing 1 2 3...
